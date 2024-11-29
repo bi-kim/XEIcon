@@ -19,7 +19,6 @@
     "icon-font",
     "icons"
   ],
-  "dependencies": {},
   "devDependencies": {
     "@babel/core": "^7.26.0",
     "@babel/preset-env": "^7.26.0",
@@ -34,6 +33,7 @@
     "gulp-rename": "^1.2.2",
     "gulp-sass": "^6.0.0",
     "gulp-twig": "^0.7.0",
-    "lodash": "^4.17.4"
+    "lodash": "^4.17.4",
+    "sass": "^1.81.0"
   }
 }
