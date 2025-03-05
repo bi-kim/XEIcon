@@ -1,18 +1,18 @@
 {
   "name": "xeicon",
-  "version": "2.3.3",
+  "version": "2.4.0",
   "description": "Beautiful transformable iconic font made for the web.",
   "main": "xeicon.min.css",
   "repository": {
     "type": "git",
-    "url": "https://github.com/xpressengine/XEIcon.git"
+    "url": "git+https://github.com/xpressengine/XEIcon.git"
   },
   "author": "xpressengine",
   "license": "OFL-1.1",
   "bugs": {
     "url": "https://github.com/xpressengine/XEIcon/issues"
   },
-  "homepage": "http://xpressengine.github.io/XEIcon/",
+  "homepage": "https://xpressengine.github.io/XEIcon/",
   "keywords": [
     "font",
     "glyphs",
