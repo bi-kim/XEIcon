@@ -4,16 +4,15 @@ import gulp from 'gulp'
 import twig from 'gulp-twig'
 import all from 'gulp-all'
 import rename from 'gulp-rename'
-import sass from 'gulp-sass'
+import dartSass from 'sass'
+import gulpSass from 'gulp-sass'
 import autoprefixer from 'gulp-autoprefixer'
 import concat from 'gulp-concat'
 import header from 'gulp-header'
 import cleanCss from 'gulp-clean-css'
 import ghPages from 'gulp-gh-pages'
 
-gulp.task('default', ['sass'])
-gulp.task('gh-build', ['gh:copy-assets', 'gh:twig-other', 'gh:twig-library'])
-
+const sass = gulpSass(dartSass)
 /* font */
 gulp.task('sass', function () {
     let subtasks = [];
@@ -22,7 +21,7 @@ gulp.task('sass', function () {
     let license = "/*!\n*  XEIcon <%= version %> by @NAVER - http://xpressengine.github.io/XEIcon/ - @XEIcon\n*  License - http://xpressengine.github.io/XEIcon/license.html (Font: SIL OFL 1.1, CSS: MIT License)\n*/\n\n"
 
     return gulp.src(['./src/versions/' + latest + '/style.css', './src/sass/xeicon.scss'])
-        .pipe(sass({outputStyle: 'expanded'}))
+        .pipe(sass({outputStyle: 'expanded'})).on('error', sass.logError)
         .pipe(autoprefixer())
         .pipe(concat('xeicon.css'))
         .pipe(header(license, {version : latest }))
@@ -35,8 +34,8 @@ gulp.task('sass', function () {
 });
 
 gulp.task('gh:deploy', function() {
-  return gulp.src('./dist/**/*')
-    .pipe(ghPages());
+    return gulp.src('./dist/**/*')
+        .pipe(ghPages());
 });
 
 /* gh-pages */
@@ -85,35 +84,35 @@ gulp.task('gh:twig-library', function () {
 
 
 function getIcons(version) {
-  let icons = []
-  let result = {
-    "version": null,
-    "categories": [],
-    "icons": null
-  }
-  let selection = JSON.parse(fs.readFileSync('./src/versions/' + version + '/selection.json').toString()).icons
+    let icons = []
+    let result = {
+        "version": null,
+        "categories": [],
+        "icons": null
+    }
+    let selection = JSON.parse(fs.readFileSync('./src/versions/' + version + '/selection.json').toString()).icons
 
-  // icon을 카테고리별로 분류
-  selection.map(function(item, idx) {
-    let icon = {}
-    let name = _.map(item.properties.name.split(','), _.trim)
+    // icon을 카테고리별로 분류
+    selection.map(function(item, idx) {
+        let icon = {}
+        let name = _.map(item.properties.name.split(','), _.trim)
 
-    // 필요한 데이터만 선별, 정리
-    icon.name = _.head(name)
-    icon.alias = _.slice(name, 1)
-    icon.category = _.head(item.icon.tags)
-    icon.order = item.iconIdx
-    icon.code = item.properties.code
-    icon.hex = item.properties.code.toString(16)
-    icon.keyword = _.uniq(_.concat(name, _.slice(item.icon.tags, 1)))
+        // 필요한 데이터만 선별, 정리
+        icon.name = _.head(name)
+        icon.alias = _.slice(name, 1)
+        icon.category = _.head(item.icon.tags)
+        icon.order = item.iconIdx
+        icon.code = item.properties.code
+        icon.hex = item.properties.code.toString(16)
+        icon.keyword = _.uniq(_.concat(name, _.slice(item.icon.tags, 1)))
 
-    icons.push(icon);
-  })
+        icons.push(icon);
+    })
 
-  result.version = version
-  result.icons = _.groupBy(icons, 'category')
-  result.categories = _.keys(result.icons)
-  return result;
+    result.version = version
+    result.icons = _.groupBy(icons, 'category')
+    result.categories = _.keys(result.icons)
+    return result;
 }
 
 function getVersions() {
@@ -128,3 +127,6 @@ function getVersions() {
 
     return _.reverse(versions)
 }
+
+gulp.task('default', gulp.series('sass'))
+gulp.task('gh-build', gulp.parallel('gh:copy-assets', 'gh:twig-other', 'gh:twig-library'))
